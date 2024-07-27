@@ -32,6 +32,8 @@ const budgetSchema = new mongoose.Schema({
         enum: ['active', 'exceeded', 'completed'],
         required: true,
     },
+},{
+    timestamps:true
 });
 
 const Budget = mongoose.model('Budget', budgetSchema);

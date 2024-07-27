@@ -12,6 +12,8 @@ const expenseCategorySchema = new mongoose.Schema({
         enum: ['fixed', 'variable'],
         required: true,
     },
+},{
+    timestamps:true
 });
 
 const ExpenseCategory = mongoose.model('ExpenseCategory', expenseCategorySchema);

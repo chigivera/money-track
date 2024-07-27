@@ -6,6 +6,7 @@
     "start": "concurrently \"cd client && npm start\" \"cd server && npm start\""
   },
   "dependencies": {
+
     "concurrently": "^7.0.0"
 
   },

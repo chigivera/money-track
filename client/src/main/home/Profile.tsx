@@ -1,7 +1,31 @@
 "use client";
 
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
+import { useEffect } from "react";
+import { fetchUserProfile } from "../../store/slice/userSlice";
+
 
 export default function Profile() {
+  const { accessToken,profile } = useSelector((state: RootState) => state.user);
+
+  const dispatch = useDispatch<AppDispatch>(); 
+
+useEffect(() => {
+  if (accessToken) {
+    dispatch(fetchUserProfile(accessToken)).unwrap()
+      .then(profile => {
+        console.log('Profile fetched:', profile);
+      })
+      .catch(error => {
+        console.error('Failed to fetch profile:', error);
+      });
+  }
+}, [dispatch, accessToken]);
+
+if (!profile) {
+  return <div>Loading profile...</div>; // Or any loading indicator
+}
   return (
     <div className="h-full bg-white dark:bg-black">
       <div className="flex flex-col items-start p-10">
@@ -12,7 +36,7 @@ export default function Profile() {
           width="96"
           className="mb-3 rounded-full shadow-lg"
         />
-        <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">Bonnie Green</h5>
+        <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{profile.profile.firstname} {profile.profile.lastname}</h5>
         <span className="text-sm text-gray-500 dark:text-gray-400">Visual Designer</span>
         
         {/* Financial Portfolio Section */}

@@ -30,6 +30,8 @@ const transactionSchema = new mongoose.Schema({
         enum: ['expense', 'income'],
         required: true,
     },
+},{
+    timestamps:true
 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
