@@ -1,10 +1,14 @@
 const Transaction = require('../models/Transaction');
+const { verifyToken } = require('../utils/jwt');
 
 // Create a new transaction
 const createTransaction = async (req, res) => {
-    const { user_id, amount, description, category_id, date, type } = req.body;
+    const token = req.headers['authorization']?.split(' ')[1];
+    const { amount, description, category_id, date, type } = req.body;
 
     try {
+        const decoded = verifyToken(token);
+        const user_id = decoded.userId;
         const transaction = new Transaction({
             user_id,
             amount,
@@ -24,16 +28,21 @@ const createTransaction = async (req, res) => {
 
 // Get all transactions for a user
 const getTransactions = async (req, res) => {
-    const { user_id } = req.params;
-
+    const token = req.headers['authorization']?.split(' ')[1];
     try {
-        const transactions = await Transaction.find({ user_id }).populate('category_id');
-        return res.status(200).json({ transactions });
+        const decoded = verifyToken(token);
+        const userId = decoded.userId;
+    
+        const transactions = await Transaction.find({ user_id: userId }).populate('category_id');
+     
+    
+        return res.status(200).json([ ...transactions ]);
     } catch (error) {
         console.error('Error fetching transactions:', error);
         return res.status(500).json({ error: 'Failed to fetch transactions' });
     }
-};
+    
+    };
 
 // Get a transaction by ID
 const getTransactionById = async (req, res) => {

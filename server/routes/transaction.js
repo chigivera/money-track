@@ -7,12 +7,14 @@ const {
     updateTransaction,
     deleteTransaction
 } = require('../controllers/transactions');
+const { upload } = require('../middlewares/fileUpload');
+const { uploadTransactions } = require('../controllers/fileUpload');
 
 // Create a new transaction
 router.post('/', createTransaction);
 
 // Get all transactions for a user
-router.get('/:user_id', getTransactions);
+router.get('/', getTransactions);
 
 // Get a transaction by ID
 router.get('/:transactionId', getTransactionById);
@@ -22,5 +24,8 @@ router.put('/:transactionId', updateTransaction);
 
 // Delete a transaction
 router.delete('/:transactionId', deleteTransaction);
+
+router.post('/transactions/upload', upload.single('file'), uploadTransactions);
+
 
 module.exports = router;

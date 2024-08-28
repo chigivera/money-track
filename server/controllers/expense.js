@@ -22,7 +22,7 @@ const createExpenseCategory = async (req, res) => {
 const getExpenseCategories = async (req, res) => {
     try {
         const expenseCategories = await ExpenseCategory.find();
-        return res.status(200).json({ expenseCategories });
+        return res.status(200).json([ ...expenseCategories ]);
     } catch (error) {
         console.error('Error fetching expense categories:', error);
         return res.status(500).json({ error: 'Failed to fetch expense categories' });
