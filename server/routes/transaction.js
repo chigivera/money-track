@@ -25,7 +25,7 @@ router.put('/:transactionId', updateTransaction);
 // Delete a transaction
 router.delete('/:transactionId', deleteTransaction);
 
-router.post('/transactions/upload', upload.single('file'), uploadTransactions);
+router.post('/upload', upload.single('file'), uploadTransactions);
 
 
 module.exports = router;

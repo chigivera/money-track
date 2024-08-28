@@ -1,9 +1,10 @@
 const csv = require('csv-parser');
 const xlsx = require('xlsx');
 const fs = require('fs');
+const Transaction = require('../models/Transaction');
 
 // Route to upload CSV or Excel files
-export const uploadTransactions = async (req, res) => {
+ const uploadTransactions = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
@@ -59,4 +60,9 @@ const parseExcel = (fileBuffer) => {
   const sheetName = workbook.SheetNames[0]; // Assume data is in the first sheet
   const sheet = workbook.Sheets[sheetName];
   return xlsx.utils.sheet_to_json(sheet);
+};
+
+
+module.exports = {
+  uploadTransactions
 };

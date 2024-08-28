@@ -1,0 +1,5 @@
+user_id,amount,description,category_id,date,type
+60d21b4667d0d8992e610c85,100,Payment for groceries,60d21b4667d0d8992e610c84,2024-08-01,expense
+60d21b4667d0d8992e610c85,2500,Monthly salary,60d21b4667d0d8992e610c83,2024-08-01,income
+60d21b4667d0d8992e610c85,50,Book purchase,60d21b4667d0d8992e610c84,2024-08-10,expense
+60d21b4667d0d8992e610c85,1500,Freelance work payment,60d21b4667d0d8992e610c83,2024-08-15,income
