@@ -1,6 +1,6 @@
 // src/features/userSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { registerUser, loginUser, sendVerificationCode, verifyEmail, createProfileUser, getProfileUser } from '../../services/user'; // Adjust the import path as necessary
+import { registerUser, loginUser, sendVerificationCode, verifyEmail, createProfileUser, getProfileUser, getAuth } from '../../services/user'; // Adjust the import path as necessary
 import { generateRandomPin } from '../../utils/utils';
 import { fetchFromLocalStorage, saveToLocalStorage } from '../../utils/localStorageUtils';
 
@@ -24,6 +24,7 @@ interface Profile {
   updatedAt?: Date;
 }
 interface UserState {
+  authenticated:boolean;
   user: null | User; // Adjusted to exclude the password field
   profile: any; // Adjust according to your profile schema
   loading: boolean;
@@ -33,6 +34,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
+  authenticated:false,
   user: null,
   profile:fetchFromLocalStorage('profile'),
   loading: false,
@@ -101,6 +103,14 @@ export const fetchUserProfile = createAsyncThunk('user/fetchProfile', async (tok
   }
 });
 
+export const auth = createAsyncThunk('user/auth', async (token: any, { rejectWithValue }) => {
+  try {
+      const response = await getAuth(token);
+      return response.data; // Ensure the response is correctly returned
+  } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Error authenticating'); // Handle error properly
+  }
+});
 // Create the user slice
 const userSlice = createSlice({
   name: 'user',
@@ -189,6 +199,23 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as string | null;
+      })
+      .addCase(auth.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(auth.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.loading = false;
+        state.authenticated = true; // Update the user state with the fetched profile data
+
+      })
+      .addCase(auth.rejected, (state, action) => {
+        console.log(action.payload)
+        state.loading = false;
+        state.authenticated = false; // Update the user state with the fetched profile data
+
         state.error = action.payload as string | null;
       });
     

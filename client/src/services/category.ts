@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 const categoryApi: AxiosInstance = axios.create({
-  baseURL: 'https://api.example.com/categories',
+  baseURL: 'http://localhost:8000/api/v1/expense',
   headers: {
     'Content-Type': 'application/json',
     // 'Authorization': 'Bearer <your_access_token>'

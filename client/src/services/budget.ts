@@ -1,10 +1,11 @@
 import axios, { AxiosInstance } from 'axios';
+import { fetchFromLocalStorage } from '../utils/localStorageUtils';
 
 const budgetApi: AxiosInstance = axios.create({
-  baseURL: 'https://api.example.com/budgets',
+  baseURL: 'http://localhost:8000/api/v1/budget',
   headers: {
     'Content-Type': 'application/json',
-    // 'Authorization': 'Bearer <your_access_token>'
+    'Authorization': `Bearer ${fetchFromLocalStorage('accessToken')}`
   },
 });
 
@@ -20,10 +21,11 @@ export const createBudget = async (budgetData: any): Promise<any> => {
 };
 
 // Get all budgets
-export const getAllBudgets = async (): Promise<any[]> => {
+export const getAllBudgets = async (params: { page: number; limit: number; startDate: string | null; endDate: string | null }) => {
+  // Make sure your backend supports and uses these parameters
   try {
-    const response = await budgetApi.get('/');
-    return response.data; // Return the list of budgets
+    const response = await budgetApi.get('/', { params });
+    return response.data;
   } catch (error) {
     console.error("Error fetching budgets:", error);
     throw error; // Rethrow the error for handling in the calling code

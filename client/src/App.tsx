@@ -12,7 +12,6 @@ import CreateProfile from "./main/profile/createProfile";
 import ProtectedRoute from "./components/protected/Protected";
 
 function App() {
-  const [auth, setAuth] = useState<boolean>(false);
   const routes = [
     {
       path: "/",
@@ -59,7 +58,7 @@ function App() {
     {
       path:"/create-profile",
       element:<CreateProfile/>,
-      protected: false
+      protected: true
     }
   ];
 

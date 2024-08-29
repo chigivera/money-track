@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
 import Dashboard from './home/Dashboard';
 import Profile from './home/Profile';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserProfile } from '../store/slice/userSlice';
-import { RootState } from '../store/store';
 
 
 const Home: React.FC = () => {

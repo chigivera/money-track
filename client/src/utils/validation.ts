@@ -29,9 +29,8 @@ export const createProfileSchema = z.object({
 
 // Define the Zod schema for the Budget model
 export const budgetSchema = z.object({
-  user_id: z.string().length(24, "User ID must be a valid ObjectId"), // Assuming ObjectId is a 24-character hex string
   category_id: z.string().length(24, "Category ID must be a valid ObjectId"), // Assuming ObjectId is a 24-character hex string
-  budget_amount: z.number().min(0, "Budget amount must be at least 0"),
+  budget_amount: z.string(),
   budgetType: z.enum(['monthly', 'yearly'], {
     required_error: "Budget type is required",
     invalid_type_error: "Budget type must be either 'monthly' or 'yearly'",
@@ -45,8 +44,7 @@ export const budgetSchema = z.object({
 
 
 export const transactionSchema = z.object({
-  user_id: z.string().length(24, "User ID must be a valid ObjectId"), // Assuming ObjectId is a 24-character hex string
-  amount: z.number().min(0, "Amount must be at least 0"),
+  amount: z.string(),
   description: z.string().max(200, "Description cannot exceed 200 characters").optional(),
   category_id: z.string().length(24, "Category ID must be a valid ObjectId"), // Assuming ObjectId is a 24-character hex string
   date: z.date().refine(date => !isNaN(date.getTime()), {

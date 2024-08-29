@@ -3,15 +3,14 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   createBudget,
   getAllBudgets,
-  getBudgetById,
   updateBudget,
   deleteBudget,
 } from '../../services/budget'; // Adjust the import path as necessary
+import { uploadBudget } from '../../services/upload';
 
 interface Budget {
-  id: string; // Make sure this line exists
-  user_id: string;
-  category_id: string;
+  _id: string; // Make sure this line exists
+  category_id: any;
   budget_amount: number;
   budgetType: 'monthly' | 'yearly';
   month_year: string; // Format: YYYY-MM
@@ -21,20 +20,26 @@ interface Budget {
 interface BudgetState {
   budgets: Budget[];
   loading: boolean;
+  total:number;
   error: string | null;
 }
 
 const initialState: BudgetState = {
   budgets: [],
+  total:0,
   loading: false,
   error: null,
 };
 
 // Async thunk for fetching all budgets
-export const fetchBudgets = createAsyncThunk('budgets/fetchAll', async () => {
-  const response = await getAllBudgets();
-  return response;
-});
+export const fetchBudgets = createAsyncThunk(
+  'budgets/fetchAll',
+  async (params: { page: number; limit: number; startDate: string | null; endDate: string | null }) => {
+    const response = await getAllBudgets(params);
+    console.log(response)
+    return response;
+  }
+);
 
 // Async thunk for creating a budget
 export const addBudget = createAsyncThunk('budgets/add', async (budgetData: Budget) => {
@@ -54,6 +59,12 @@ export const removeBudget = createAsyncThunk('budgets/remove', async (budgetId: 
   return budgetId; // Return the ID of the deleted budget
 });
 
+export const importBudget = createAsyncThunk('Budgets/upload',async (budgetData: any) => {
+  const response = await uploadBudget(budgetData)
+  return response
+})
+
+
 // Create the budget slice
 const budgetSlice = createSlice({
   name: 'budgets',
@@ -67,7 +78,8 @@ const budgetSlice = createSlice({
       })
       .addCase(fetchBudgets.fulfilled, (state, action) => {
         state.loading = false;
-        state.budgets = action.payload; // Set budgets on successful fetch
+        state.budgets = action.payload.budgets; // Assuming payload has a structure { budgets: Budget[], total: number }
+        state.total = action.payload.total;
       })
       .addCase(fetchBudgets.rejected, (state, action) => {
         state.loading = false;
@@ -91,7 +103,7 @@ const budgetSlice = createSlice({
       })
       .addCase(editBudget.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.budgets.findIndex(budget => budget.id === action.payload.id);
+        const index = state.budgets.findIndex(budget => budget._id === action.payload._id);
         if (index !== -1) {
           state.budgets[index] = action.payload; // Update budget
         }
@@ -106,11 +118,24 @@ const budgetSlice = createSlice({
       })
       .addCase(removeBudget.fulfilled, (state, action) => {
         state.loading = false;
-        state.budgets = state.budgets.filter(budget => budget.id !== action.payload); // Remove budget
+        state.budgets = state.budgets.filter(budget => budget._id !== action.payload); // Remove budget
       })
       .addCase(removeBudget.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string | null; // Assert the type here
+      })
+      .addCase(importBudget.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(importBudget.fulfilled, (state, action) => {
+        state.loading = false;
+        // Assuming `action.payload` contains the imported Budget data
+        state.budgets.push(action.payload);
+      })
+      .addCase(importBudget.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string | null;
       });
   },
 });

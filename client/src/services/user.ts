@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { fetchFromLocalStorage } from '../utils/localStorageUtils';
 
 const userApi: AxiosInstance = axios.create({
   baseURL: 'http://localhost:8000/api/v1/users',
@@ -136,5 +137,18 @@ export const verifyEmail = async (email: string, pin: string): Promise<any> => {
   } catch (error) {
     console.error("Error verifying email code:", error);
     throw error; // Rethrow the error for handling in the calling code
+  }
+};
+
+export const getAuth = async (accessToken: any): Promise<any> => {
+  console.log(accessToken)
+  try {
+      const response = await userApi.post('/auth', {
+           accessToken , // Correctly structure the request
+      });
+      return response;
+  } catch (error) {
+      console.error("Error getting auth", error);
+      throw error; // Re-throw error for handling in the thunk
   }
 };

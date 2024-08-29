@@ -9,9 +9,9 @@ import {
 } from '../../services/category'; // Adjust the import path as necessary
 
 interface Category {
-  id: string;
+  _id: string;
   name: string;
-  // Add other category fields as necessary
+  expenseType:string;
 }
 
 interface CategoryState {
@@ -63,7 +63,8 @@ const categorySlice = createSlice({
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.loading = false;
-        state.categories = action.payload; // Set categories on successful fetch
+        state.categories = action.payload;
+        console.log(state.categories) // Set categories on successful fetch
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false;
@@ -87,7 +88,7 @@ const categorySlice = createSlice({
       })
       .addCase(editCategory.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.categories.findIndex(category => category.id === action.payload.id);
+        const index = state.categories.findIndex(category => category._id === action.payload.id);
         if (index !== -1) {
           state.categories[index] = action.payload; // Update category
         }
@@ -102,7 +103,7 @@ const categorySlice = createSlice({
       })
       .addCase(removeCategory.fulfilled, (state, action) => {
         state.loading = false;
-        state.categories = state.categories.filter(category => category.id !== action.payload); // Remove category
+        state.categories = state.categories.filter(category => category._id !== action.payload); // Remove category
       })
       .addCase(removeCategory.rejected, (state, action) => {
         state.loading = false;

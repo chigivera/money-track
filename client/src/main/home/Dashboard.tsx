@@ -46,13 +46,12 @@ const Dashboard: React.FC = () => {
             <div className="flex flex-col flex-1  p-2">
                 <Card className='text-2xl text-lime-700 font-bold'>Expenses</Card>
                 <CCard balanceAmount={9221.48} totalThisMonth={478.33} percentageChange={2.4} />
-                <CCard balanceAmount={9221.48} totalThisMonth={478.33} percentageChange={2.4} />
 
             </div>
             <div className="flex flex-col-reverse  flex-1  p-2">
             <Card className="mt-4">
-  <a className=' bg-lime-700 text-white text-xl font-bold p-1   rounded-xs' href="">Go To Transaction </a>
-</Card>                <CCard balanceAmount={9221.48} totalThisMonth={478.33} percentageChange={2.4} />
+  <a className=' text-lime-700 text-xl font-bold p-1   rounded-xs' href="">Go To Transaction </a>
+</Card>                
                 <CCard balanceAmount={9221.48} totalThisMonth={478.33} percentageChange={2.4} />
 
             </div>
