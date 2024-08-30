@@ -23,8 +23,15 @@ build:
 
 deploy:
   stage: deploy
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $VPS_HOST >> ~/.ssh/known_hosts
   script:
-    - ssh benchamkha@62.169.24.84 "docker pull $IMAGE_TAG"
-    - ssh benchamkha@62.169.24.84 "docker-compose -f ./docker-compose.yml up -d"
+    - ssh $VPS_USER@$VPS_HOST "docker pull $IMAGE_TAG"
+    - ssh $VPS_USER@$VPS_HOST "docker-compose -f ./docker-compose.yml up -d"
   only:
     - main
