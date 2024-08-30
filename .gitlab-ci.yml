@@ -1,10 +1,34 @@
-image: alpine:latest
+image: docker:latest
+
+services:
+  - docker:dind
 
 stages:
+  - build
   - test
+  - deploy
+
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:
+  stage: build
+  script:
+    - docker-compose -f docker-compose.yml build
+    - docker-compose -f docker-compose.yml push
 
 test:
   stage: test
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts
   script:
-    - echo "Testing pipeline execution"
-    - env  # This will print all environment variables for debugging
+    - ssh $VPS_USER@$VPS_HOST "docker pull $IMAGE_TAG"
+    - ssh $VPS_USER@$VPS_HOST "docker-compose -f ./docker-compose.yml up -d"
+  only:
+    - main
