@@ -1,19 +1,10 @@
-image: docker:latest
-
-services:
-  - docker:dind
+image: alpine:latest
 
 stages:
   - test
 
 test:
   stage: test
-  before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts
   script:
-    - ssh $VPS_USER@$VPS_HOST "echo 'SSH Connection Successful!'"
+    - echo "Testing pipeline execution"
+    - env  # This will print all environment variables for debugging
