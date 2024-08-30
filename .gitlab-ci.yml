@@ -1,37 +1,10 @@
-image: docker:latest
-
-services:
-  - docker:dind
+image: alpine:latest
 
 stages:
-  - build
-  - deploy
+  - test
 
-variables:
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-
-before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
-build:
-  stage: build
+test:
+  stage: test
   script:
-    - docker-compose -f docker-compose.yml build
-    - docker-compose -f docker-compose.yml push
-
-deploy:
-  stage: deploy
-  before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan $VPS_HOST >> ~/.ssh/known_hosts
-  script:
-    - ssh $VPS_USER@$VPS_HOST "docker pull $IMAGE_TAG"
-    - ssh $VPS_USER@$VPS_HOST "docker-compose -f ./docker-compose.yml up -d"
-  only:
-    - main
+    - echo "Testing pipeline execution"
+    - env  # This will print all environment variables for debugging
