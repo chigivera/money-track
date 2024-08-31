@@ -29,9 +29,6 @@ test:
     - ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts
   script:
     - ssh $VPS_USER@$VPS_HOST "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
-    - ssh $VPS_USER@$VPS_HOST "sudo curl -L 'https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-$(uname -s)-$(uname -m)' -o /usr/local/bin/docker-compose"
-    - ssh $VPS_USER@$VPS_HOST "sudo chmod +x /usr/local/bin/docker-compose"
-    - ssh $VPS_USER@$VPS_HOST "sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose"
     - ssh $VPS_USER@$VPS_HOST "docker-compose -f ./docker-compose.yml up -d"
   only:
     - main
