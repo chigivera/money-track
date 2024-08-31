@@ -30,6 +30,6 @@ test:
   script:
     - ssh $VPS_USER@$VPS_HOST "ls -la"
     - ssh $VPS_USER@$VPS_HOST "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
-    - ssh $VPS_USER@$VPS_HOST "docker-compose -f ./docker-compose.yml up -d"
+    - ssh $VPS_USER@$VPS_HOST "docker-compose -f simplon/money-track/docker-compose.yml up -d"
   only:
     - main
