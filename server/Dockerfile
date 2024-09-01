@@ -14,7 +14,7 @@ RUN npm install --verbose --legacy-peer-deps
 COPY . .
 
 # Expose the port
-EXPOSE 5000
+EXPOSE 3001
 
 # Start the server
 CMD ["npm", "run", "dev"]
