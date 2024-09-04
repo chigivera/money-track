@@ -6,13 +6,14 @@ const {
     getBudgetById,
     updateBudget,
     deleteBudget,
+    getBudgetList,
 } = require('../controllers/budgets');
 const { uploadBudgets } = require('../controllers/fileUpload');
 const { upload } = require('../middlewares/fileUpload');
 
 // Create a new budget
 router.post('/', createBudget);
-
+router.get('/list',getBudgetList)
 // Get all budgets for a user
 router.get('/', getBudgets);
 

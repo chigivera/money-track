@@ -8,22 +8,31 @@ import { DeleteModal } from "./DeleteModal";
 import { FileUploadModal } from "../transactions/FileUploadModal"; // Assuming a similar FileUploadModal is available for budgets
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
-import { addBudget, editBudget, fetchBudgets, importBudget, removeBudget } from "../../store/slice/budgetSlice";
+import {
+  addBudget,
+  editBudget,
+  fetchBudgets,
+  importBudget,
+  removeBudget,
+} from "../../store/slice/budgetSlice";
 import { fetchCategories } from "../../store/slice/categorySlice";
+import { useNavigate } from "react-router-dom";
 
 interface Budget {
   _id: string; // Make sure this line exists
   category_id: any;
   budget_amount: number;
-  budgetType: 'monthly' | 'yearly';
+  budgetType: "monthly" | "yearly";
   month_year: string; // Format: YYYY-MM
-  status: 'active' | 'exceeded' | 'completed';
+  status: "active" | "exceeded" | "completed";
 }
 
 export const Budgets: React.FC = () => {
+  const navigate = useNavigate();
+
   const dispatch = useDispatch<AppDispatch>();
-  const { budgets,total ,loading, error } = useSelector(
-    (state: RootState) => state.budget
+  const { budgets, total, loading, error } = useSelector(
+    (state: RootState) => state.budget,
   );
   const [value, setValue] = useState({
     startDate: null,
@@ -42,12 +51,9 @@ export const Budgets: React.FC = () => {
 
   const fetchBudgetData = () => {
     const { startDate, endDate } = value;
-    dispatch(
-      fetchBudgets({ page: currentPage, limit: 5, startDate, endDate })
-    ); // Fetch transactions with pagination and date range
+    dispatch(fetchBudgets({ page: currentPage, limit: 5, startDate, endDate })); // Fetch transactions with pagination and date range
   };
   // Sample budgets data to display (replace this with data fetched from the backend)
-  
 
   const totalPages = Math.ceil(total / 5); // Adjust total and limit according to your data
 
@@ -62,7 +68,9 @@ export const Budgets: React.FC = () => {
     setSelectedBudget(null); // Reset for adding a new budget
     setAddEditModalOpen(true);
   };
-
+  const goToTransaction = (budgetId: string) => {
+    navigate(`/transactions/?budget=${budgetId}`);
+  };
   const handleEdit = (budgetId: string) => {
     const budget = budgets.find((t) => t._id === budgetId);
     setSelectedBudget(budget); // Set the budget to edit
@@ -117,12 +125,7 @@ export const Budgets: React.FC = () => {
               <Table.HeadCell>Budget Type</Table.HeadCell>
               <Table.HeadCell>Month/Year</Table.HeadCell>
               <Table.HeadCell>Status</Table.HeadCell>
-              <Table.HeadCell>
-                <span className="sr-only">Edit</span>
-              </Table.HeadCell>
-              <Table.HeadCell>
-                <span className="sr-only">Delete</span>
-              </Table.HeadCell>
+              <Table.HeadCell>Actions</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
               {budgets.length > 0 &&
@@ -140,7 +143,26 @@ export const Budgets: React.FC = () => {
                     <Table.Cell>
                       <Badge>{budget.status}</Badge>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell className="flex">
+                      <span
+                        className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                        onClick={() => goToTransaction(budget._id)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                          />
+                        </svg>
+                      </span>
                       <span
                         className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
                         onClick={() => handleEdit(budget._id)}
@@ -160,8 +182,6 @@ export const Budgets: React.FC = () => {
                           />
                         </svg>
                       </span>
-                    </Table.Cell>
-                    <Table.Cell>
                       <span
                         className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
                         onClick={() => handleDeleteBudget(budget._id)}

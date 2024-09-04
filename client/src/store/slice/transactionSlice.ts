@@ -15,6 +15,7 @@ interface Transaction {
   category_id: any;
   date: any;
   type: 'expense' | 'income';
+  budget_id:any;
 }
 
 interface TransactionState {
@@ -37,12 +38,13 @@ interface FetchTransactionsArgs {
   limit: number;
   startDate?: string | null;  // Optional parameters for date filtering
   endDate?: string | null;
+  budget_id?:string|null;
 }
 
 export const fetchTransactions = createAsyncThunk<any, FetchTransactionsArgs>(
   'transactions/fetchAll',
-  async ({ page = 1, limit = 10, startDate, endDate }: FetchTransactionsArgs) => {
-    const response = await getAllTransactions(page, limit, startDate, endDate);  // Pass dates to the API function
+  async ({ page = 1, limit = 10, startDate, endDate,budget_id }: FetchTransactionsArgs) => {
+    const response = await getAllTransactions(page, limit, startDate, endDate,budget_id);  // Pass dates to the API function
 
     // Ensure the returned data matches the TransactionsResponse shape
     return response;

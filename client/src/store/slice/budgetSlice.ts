@@ -5,6 +5,7 @@ import {
   getAllBudgets,
   updateBudget,
   deleteBudget,
+  getBudgetList,
 } from '../../services/budget'; // Adjust the import path as necessary
 import { uploadBudget } from '../../services/upload';
 
@@ -31,10 +32,18 @@ const initialState: BudgetState = {
   error: null,
 };
 
+export const fetchBudgetList = createAsyncThunk('budgets/list',
+  async () => {
+    const response = await getBudgetList()
+    console.log(response)
+    return response
+  }
+)
+
 // Async thunk for fetching all budgets
 export const fetchBudgets = createAsyncThunk(
   'budgets/fetchAll',
-  async (params: { page: number; limit: number; startDate: string | null; endDate: string | null }) => {
+  async (params: { page?: number; limit?: number; startDate?: string | null; endDate?: string | null }) => {
     const response = await getAllBudgets(params);
     console.log(response)
     return response;
@@ -134,6 +143,19 @@ const budgetSlice = createSlice({
         state.budgets.push(action.payload);
       })
       .addCase(importBudget.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string | null;
+      })
+      .addCase(fetchBudgetList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBudgetList.fulfilled, (state, action) => {
+        state.loading = false;
+        // Assuming `action.payload` contains the imported Budget data
+        state.budgets = action.payload;
+      })
+      .addCase(fetchBudgetList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string | null;
       });

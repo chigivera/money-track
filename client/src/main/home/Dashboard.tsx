@@ -1,58 +1,50 @@
-import React from 'react';
-import CCard from '../../components/charts/Card';
+import React, { useEffect, useState } from 'react';
+import Bar from '../../components/charts/BarChart';
 import { Card } from 'flowbite-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { fetchTransactions } from '../../store/slice/transactionSlice';
+import BarChart from '../../components/charts/BarChart';
+import PieChart from '../../components/charts/PieChart';
 
 const Dashboard: React.FC = () => {
-    const barChartData = {
-        labels: ['January', 'February', 'March', 'April', 'May'],
-        datasets: [
-            {
-                label: 'Sales',
-                data: [30, 20, 50, 40, 60],
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            },
-        ],
-    };
-
-    const lineChartData = {
-        labels: ['January', 'February', 'March', 'April', 'May'],
-        datasets: [
-            {
-                label: 'Revenue',
-                data: [20, 30, 25, 35, 50],
-                borderColor: 'rgba(255, 99, 132, 1)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                fill: true,
-            },
-        ],
-    };
-
-    const pieChartData = {
-        labels: ['Red', 'Blue', 'Yellow'],
-        datasets: [
-            {
-                data: [12, 19, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                ],
-            },
-        ],
-    };
-
+    const dispatch = useDispatch<AppDispatch>();
+    const [value, setValue] = useState({
+      startDate: null,
+      endDate: null,
+      budget_id: null,
+    });
+    const { transactions, loading } = useSelector(
+        (state: RootState) => state.transaction,
+      );
+    useEffect(() => {
+        fetchTransactionData();
+      }, [dispatch ]);
+    const fetchTransactionData = () => {
+        const { startDate, endDate, budget_id } = value; // Include budget_id
+        dispatch(
+          fetchTransactions({
+            page: 0,
+            limit: 5,
+            startDate,
+            endDate,
+            budget_id,
+          }),
+        ); // Fetch transactions with pagination, date range, and budget filter
+      };
     return (
         <div className='flex flex-wrap'>
             <div className="flex flex-col flex-1  p-2">
                 <Card className='text-2xl text-lime-700 font-bold'>Expenses</Card>
-                <CCard balanceAmount={9221.48} totalThisMonth={478.33} percentageChange={2.4} />
+                <BarChart totalThisMonth={478.33} transactions={transactions}/>
 
             </div>
             <div className="flex flex-col-reverse  flex-1  p-2">
+
             <Card className="mt-4">
   <a className=' text-lime-700 text-xl font-bold p-1   rounded-xs' href="">Go To Transaction </a>
 </Card>                
-                <CCard balanceAmount={9221.48} totalThisMonth={478.33} percentageChange={2.4} />
+            <PieChart totalThisMonth={478.33} transactions={transactions}/>
 
             </div>
           

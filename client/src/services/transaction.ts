@@ -21,11 +21,13 @@ export const createTransaction = async (transactionData: any): Promise<any> => {
 };
 
 // Get all transactions
-export const getAllTransactions = async (page: number, limit: number, startDate?: string | null, endDate?: string | null): Promise<any[]> => {
+export const getAllTransactions = async (page: number, limit: number, startDate?: string | null, endDate?: string | null ,budget_id?: string | null): Promise<any[]> => {
   const params: any = { page, limit };
   
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
+  if (budget_id) params.budget_id = budget_id;
+
   try {
     const response = await transactionApi.get(`/?${new URLSearchParams(params)}`);
     return response.data; // Return the list of transactions

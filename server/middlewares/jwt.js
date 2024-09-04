@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const  startSession = (req, res,next) => {
+const { generateToken } = require('../utils/jwt');
+const  startSession = (req, res) => {
   console.log("starting session")
   try {
     const token = jwt.sign({ userId: req.user._id }, process.env.MY_SECRET, { expiresIn: '1h' });

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Pagination, Table, Button, Badge } from "flowbite-react";
+import { Pagination, Table, Button, Badge, Select } from "flowbite-react";
 import Datepicker from "react-tailwindcss-datepicker";
 import { AddEditModal } from "./AddEditModal";
 import { DeleteModal } from "./DeleteModal";
@@ -16,15 +16,22 @@ import {
 } from "../../store/slice/transactionSlice";
 import { fetchCategories } from "../../store/slice/categorySlice";
 import { FileUploadModal } from "./FileUploadModal";
+import { fetchBudgetList, fetchBudgets } from "../../store/slice/budgetSlice";
+import { useLocation } from "react-router-dom";
 export const Transactions: React.FC = () => {
   const [value, setValue] = useState({
     startDate: null,
     endDate: null,
+    budget_id: null,
   });
+  const location = useLocation();
+
   const dispatch = useDispatch<AppDispatch>();
-  const { transactions,total ,loading, error } = useSelector(
+  const { transactions, total, loading, error } = useSelector(
     (state: RootState) => state.transaction,
   );
+  const { budgets } = useSelector((state: RootState) => state.budget);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -32,21 +39,35 @@ export const Transactions: React.FC = () => {
   const [transactionToDelete, setTransactionToDelete] = useState<any>(null); // For deleting
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const budgetId = searchParams.get("budget");
+    if (budgetId) {
+      handleValueChange({ budget_id: budgetId });
+    }
+  }, [location]);
+
+  useEffect(() => {
     fetchTransactionData();
-    dispatch(fetchCategories()); // Fetch categories when the modal opens
+    dispatch(fetchBudgetList()); // Fetch categories when the modal opens
   }, [currentPage, value]); // Add `value` as a dependency
 
   const fetchTransactionData = () => {
-    const { startDate, endDate } = value;
+    const { startDate, endDate, budget_id } = value; // Include budget_id
     dispatch(
-      fetchTransactions({ page: currentPage, limit: 5, startDate, endDate })
-    ); // Fetch transactions with pagination and date range
+      fetchTransactions({
+        page: currentPage,
+        limit: 5,
+        startDate,
+        endDate,
+        budget_id,
+      }),
+    ); // Fetch transactions with pagination, date range, and budget filter
   };
   const totalPages = Math.ceil(total / 5); // Calculate total pages
 
   const handleValueChange = (newValue: any) => {
-    console.log("newValue:", newValue);
-    setValue(newValue);
+    setValue((prev) => ({ ...prev, ...newValue })); // Update state with new values
+    console.log(value);
   };
 
   const onPageChange = (page: number) => {
@@ -93,10 +114,71 @@ export const Transactions: React.FC = () => {
               displayFormat="DD/MM/YYYY"
             />
           </div>
+          <Select
+            id="budget_id"
+            value={value.budget_id || ""}
+            onChange={(e) => handleValueChange({ budget_id: e.target.value })} // Corrected to pass an object
+          >
+            <option value="">Select a budget</option>
+            {budgets.map((budget: { _id: string }) => (
+              <option key={budget._id} value={budget._id}>
+                {budget._id} {/* Display budget names */}
+              </option>
+            ))}
+          </Select>
           <div className="flex space-x-2">
-            <Button onClick={handleAddEditData}>Add Data</Button>
-            <Button onClick={handleImportData}>Import Data</Button>
-            <Button onClick={handleExportData}>Export Data</Button>
+            <Button onClick={handleAddEditData}>
+              <span className="hidden md:block">Add Data</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
+            </Button>
+            <Button onClick={handleImportData}>
+              <span className="hidden md:block">Import Data</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m0-3-3-3m0 0-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75"
+                />
+              </svg>
+            </Button>
+            <Button onClick={handleExportData}>
+              {" "}
+              <span className="hidden md:block">Export Data</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m-6 3.75 3 3m0 0 3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75"
+                />
+              </svg>
+            </Button>
           </div>
         </div>
 
@@ -105,8 +187,6 @@ export const Transactions: React.FC = () => {
             <Table.Head>
               <Table.HeadCell>Amount</Table.HeadCell>
               <Table.HeadCell>Description</Table.HeadCell>
-              <Table.HeadCell>Category Name</Table.HeadCell>
-              <Table.HeadCell>Category Type</Table.HeadCell>
               <Table.HeadCell>Date</Table.HeadCell>
               <Table.HeadCell>Type</Table.HeadCell>
               <Table.HeadCell>
@@ -125,12 +205,7 @@ export const Transactions: React.FC = () => {
                   >
                     <Table.Cell>{transaction.amount}</Table.Cell>
                     <Table.Cell>{transaction.description}</Table.Cell>
-                    <Table.Cell>
-                      <Badge>{transaction.category_id?.name}</Badge>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Badge>{transaction.category_id?.expenseType}</Badge>
-                    </Table.Cell>
+
                     <Table.Cell>{transaction.date}</Table.Cell>
                     <Table.Cell>
                       <Badge>{transaction.type}</Badge>

@@ -16,9 +16,9 @@ const transactionSchema = new mongoose.Schema({
         type: String,
         maxlength: 200,
     },
-    category_id: {
+    budget_id: {  // New reference to Budget
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'ExpenseCategory',
+        ref: 'Budget',
         required: true,
     },
     date: {
@@ -30,8 +30,8 @@ const transactionSchema = new mongoose.Schema({
         enum: ['expense', 'income'],
         required: true,
     },
-},{
-    timestamps:true
+}, {
+    timestamps: true
 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);

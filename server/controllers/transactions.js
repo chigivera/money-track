@@ -4,7 +4,7 @@ const { verifyToken } = require('../utils/jwt');
 // Create a new transaction
 const createTransaction = async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1];
-    const { amount, description, category_id, date, type } = req.body;
+    const { amount, description, date, type, budget_id } = req.body;
 
     try {
         const decoded = verifyToken(token);
@@ -13,12 +13,12 @@ const createTransaction = async (req, res) => {
             user_id,
             amount,
             description,
-            category_id,
             date,
             type,
+            budget_id
         });
 
-        await transaction.save();
+        await transaction.save();   
         return res.status(201).json({ message: 'Transaction created successfully', transaction });
     } catch (error) {
         console.error('Error creating transaction:', error);
@@ -34,7 +34,8 @@ const getTransactions = async (req, res) => {
     const skip = (page - 1) * limit;  // Calculate skip for pagination
     const startDate = req.query.startDate;  // Get startDate from query parameters
     const endDate = req.query.endDate;  // Get endDate from query parameters
-  
+    const budget_id = req.query.budget_id;  // Get endDate from query parameters
+
     try {
       const decoded = verifyToken(token);
       const userId = decoded.userId;
@@ -45,10 +46,11 @@ const getTransactions = async (req, res) => {
       if (startDate && endDate) {
         query.date = { $gte: new Date(startDate), $lte: new Date(endDate) };  // Apply date range filtering
       }
-  
+      if(budget_id) {
+        query.budget_id = budget_id
+      }
       // Fetch transactions with pagination
       const transactions = await Transaction.find(query)
-        .populate('category_id')
         .skip(skip)
         .limit(limit);
   

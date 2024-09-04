@@ -10,9 +10,9 @@ interface Transaction {
   _id: string;
   amount: number;
   description?: string;
-  category_id: string;
   date: Date;
   type: "expense" | "income";
+  budget_id: string;
 }
 
 interface AddEditModalProps {
@@ -41,8 +41,9 @@ export function AddEditModal({
         }
       : undefined,
   });
-  const { categories } = useSelector((state: RootState) => state.category); // Adjust the state type as necessary
-
+  const {  budgets } = useSelector(
+    (state: RootState) => state.budget,
+  ); 
   const onSubmitHandler = (data: Transaction) => {
     if (initialData) data._id = initialData._id;
     data.amount = Number(data.amount);
@@ -98,36 +99,34 @@ export function AddEditModal({
             )}
           </div>
           <div>
-            <Label htmlFor="category_id" value="Category" />
+            <Label htmlFor="budget_id" value="Budget" />
             <Controller
-              name="category_id"
+              name="budget_id"
               control={control}
               render={({ field: { onChange, value, ref, ...rest } }) => (
                 <Select
-                  id="category_id"
+                  id="budget_id"
                   value={value || ""} // Ensure the value is controlled
                   onChange={(event) => {
                     const selectedValue = event.target.value;
                     onChange(selectedValue); // Update the form state with the selected category ID
                   }}
                   required
-                  className={errors.category_id ? "border-red-500" : ""}
+                  className={errors.budget_id ? "border-red-500" : ""}
                   ref={ref} // Pass the ref for accessibility
                   {...rest}
                 >
-                  <option value="">Select a category</option>
-                  {categories.map((category: { _id: string; name: string }) => (
-                    <option key={category._id} value={category._id}>
-                      {" "}
-                      {/* Use category._id here */}
-                      {category.name}
+                  <option value="">Select a budget</option>
+                  {budgets.map((budget: { _id: string; }) => (
+                    <option key={budget._id} value={budget._id}>
+                      {budget._id}
                     </option>
                   ))}
                 </Select>
               )}
             />
-            {errors.category_id && (
-              <p className="text-red-500">{errors.category_id.message}</p>
+            {errors.budget_id && (
+              <p className="text-red-500">{errors.budget_id.message}</p>
             )}
           </div>
           <div>

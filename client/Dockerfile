@@ -8,16 +8,20 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --legacy-peer-deps
+RUN npm i
 
 # Copy the rest of the application code
 COPY . .
 
-# Build the application
+# Start the application
 RUN npm run build
 
-# Expose the port
+FROM nginx
+
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
+

@@ -20,8 +20,18 @@ export const createBudget = async (budgetData: any): Promise<any> => {
   }
 };
 
+export const getBudgetList = async () => {
+  try {
+    const response  = await budgetApi.get('/list')
+    return response.data
+  } catch (error) {
+    console.log('error')
+    throw error;
+  }
+}
+
 // Get all budgets
-export const getAllBudgets = async (params: { page: number; limit: number; startDate: string | null; endDate: string | null }) => {
+export const getAllBudgets = async (params: { page?: number; limit?: number; startDate?: string | null; endDate?: string | null }) => {
   // Make sure your backend supports and uses these parameters
   try {
     const response = await budgetApi.get('/', { params });

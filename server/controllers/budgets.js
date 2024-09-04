@@ -1,6 +1,8 @@
 const Budget = require("../models/Budget");
 const { verifyToken } = require("../utils/jwt");
 
+
+
 // Create a new budget
 const createBudget = async (req, res) => {
   const token = req.headers["authorization"]?.split(" ")[1];
@@ -126,10 +128,29 @@ const deleteBudget = async (req, res) => {
   }
 };
 
+const getBudgetList = async (req, res) => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+
+  try {
+    const decoded = verifyToken(token);
+    const user_id = decoded.userId;
+    // Fetching only the '_id' field from each budget document
+    const budgets = await Budget.find({user_id}, '_id');
+
+    // Extracting the list of IDs
+
+    // Sending the list of IDs in the response
+    res.status(200).json(budgets);
+  } catch (error) {
+    console.error('Error fetching budget list:', error);
+    res.status(500).json({ message: 'Error fetching budget list' });
+  }
+};
 module.exports = {
   createBudget,
   getBudgets,
   getBudgetById,
   updateBudget,
   deleteBudget,
+  getBudgetList
 };
